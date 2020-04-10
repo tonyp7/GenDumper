@@ -34,13 +34,62 @@ namespace WinCartDumper
 
 
             megaDumper = new MegaDumper();
+            megaDumper.ProgressChanged += MegaDumper_ProgressChanged;
+            megaDumper.DoWork += MegaDumper_DoWork;
+            megaDumper.RunWorkerCompleted += MegaDumper_RunWorkerCompleted;
+
             ports = new string[0];
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+        }
+
+        public enum LogType
+        {
+            Info,
+            Warning,
+            Success,
+            Error
+        }
 
 
+        private static Color colorError = Color.FromArgb(192, 0, 0);
+        private static Color colorDefault = Color.FromArgb(0, 0, 0);
+        private static Color colorSuccess = Color.FromArgb(0, 192, 0);
+        private static Color colorWarning = Color.FromArgb(192, 192, 0);
+        public void log(string message, LogType logtype)
+        {
+            Color c;
+            switch (logtype)
+            {
+                case LogType.Warning:
+                    c = colorWarning;
+                    break;
+                case LogType.Error:
+                    c = colorError;
+                    break;
+                case LogType.Success:
+                    c = colorSuccess;
+                    break;
+                default:
+                    c = colorDefault;
+                    break;
+            }
+
+            int currentIndex = rtfLog.TextLength;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+            sb.Append(": ");
+            sb.Append(message);
+            sb.AppendLine();
+
+            rtfLog.Select(rtfLog.TextLength, 0);
+            rtfLog.AppendText(sb.ToString());
+            rtfLog.Select(currentIndex, sb.Length);
+            rtfLog.SelectionColor = c;
+            rtfLog.Select(rtfLog.TextLength, 0);
+            rtfLog.ScrollToCaret();
         }
 
         private void btnAutodetect_Click(object sender, EventArgs e)
@@ -58,7 +107,9 @@ namespace WinCartDumper
         }
 
 
-        public static void AutoDetect()
+        
+
+        private void AutoDetect()
         {
             lock (ports)
             {
@@ -66,18 +117,10 @@ namespace WinCartDumper
 
                 foreach(string p in ports)
                 {
-                    //serialPort.PortName = p;
-                    try
-                    {
-                        //serialPort.Open();
-                        //serialPort.Write("v");
-                        //serialPort.Close();
-                    }
-                    catch
-                    {
-                        
-                    }
                     
+                    megaDumper.Operation = MegaDumperOperation.Version;
+                    megaDumper.Port = p;
+                    megaDumper.RunWorkerAsync();
 
                 }
 
@@ -94,7 +137,10 @@ namespace WinCartDumper
 
         private void btnGetInfo_Click(object sender, EventArgs e)
         {
+            log("This is an error", LogType.Error);
+            log("This is a success", LogType.Success);
 
+            return;
             megaDumper.Port = "COM5";
 
             rtfLog.Text += "INFO: Cart header dump start\r\n";
@@ -150,6 +196,11 @@ namespace WinCartDumper
         private void MegaDumper_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             toolStripProgressBar.Value = e.ProgressPercentage;
+        }
+
+        private void saveLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

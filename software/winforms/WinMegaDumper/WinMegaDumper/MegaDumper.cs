@@ -33,6 +33,11 @@ namespace WinCartDumper
         private static RomHeader romHeader;
 
 
+        public MegaDumperOperation Operation
+        {
+            get { return operation; }
+            set { operation = value; }
+        }
 
         /// <summary>
         /// Because the Sega Mega Drive endianness does not match x86, we need to reverse bytes of any number conversion to get the actual value.
