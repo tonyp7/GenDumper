@@ -202,6 +202,12 @@ namespace WinCartDumper
         {
 
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmAbout f = new frmAbout();
+            f.ShowDialog();
+        }
     }
 
 
