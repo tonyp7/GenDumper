@@ -14,7 +14,8 @@ namespace WinCartDumper
         None = (byte)'\0',
         Version = (byte)'v',
         Dump = (byte)'d',
-        Header = (byte)'h'
+        Header = (byte)'h',
+        Autodetect = (byte)'a'
     }
 
 
@@ -93,6 +94,81 @@ namespace WinCartDumper
         {
             get { return port; }
             set { port = value; }
+        }
+
+
+        public string AutoDetect()
+        {
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string p in ports)
+            {
+                port = p;
+                string v = GetVersion();
+                if (v.StartsWith("MEGA DUMPER"))
+                {
+                    //found mega dumper on port p
+                    return p;
+                }
+            }
+            return string.Empty;
+        }
+
+        public string GetVersion()
+        {
+            string ret = "";
+
+            try
+            {
+                try
+                {
+                    serialPort.PortName = port;
+                    bytesToReceive = 0;
+                    bytesStream.Clear();
+                    //operation = MegaDumperOperation.Version;
+
+                    /* build version command */
+                    byte[] command = new byte[1];
+                    command[0] = (byte)'v';
+
+                    serialPort.Open();
+                    lock (transmissionOverLock)
+                    {
+                        serialPort.Write(command, 0, command.Length);
+                        if (!Monitor.Wait(transmissionOverLock, 500))
+                        {
+                            throw new TimeoutException();
+                        }
+                        else
+                        {
+                            //business as normal
+                        }
+                    }
+
+                }
+                catch (System.IO.IOException ioe)
+                {
+                    //most likely COM1 or another port than failed at the "Open" step
+                }
+                catch (TimeoutException te)
+                {
+                    //most likely a connected thing which is not a mega dumper
+                }
+                catch (Exception e)
+                {
+                    // 🤷 ¯\_(ツ)_/¯ 🤷
+                }
+                finally
+                {
+                    serialPort.Close();
+                }
+            }
+            catch { }
+           
+
+            ret = Encoding.ASCII.GetString(bytesStream.ToArray());
+
+            return ret;
+
         }
 
         public byte[] GetDump(uint from, uint to)
@@ -201,10 +277,13 @@ namespace WinCartDumper
             }
             else
             {
-                int progress = (int) ( (float)bytesStream.Count / (float)bytesToReceive * 100.0f );
-                this.ReportProgress((int)progress);
 
-                
+                if(operation != MegaDumperOperation.Autodetect)
+                {
+                    int progress = (int)((float)bytesStream.Count / (float)bytesToReceive * 100.0f);
+                    this.ReportProgress((int)progress);
+                }
+
                 //this.ReportProgress(50);
             }
             if (bytesStream.Count >= bytesToReceive)

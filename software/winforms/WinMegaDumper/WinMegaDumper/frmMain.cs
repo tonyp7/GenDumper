@@ -24,25 +24,58 @@ namespace WinCartDumper
             License: CC Attribution-Noncommercial-No Derivate 4.0
         */
 
-
-        public static string[] ports;
         MegaDumper megaDumper;
 
         public frmMain()
         {
             InitializeComponent();
 
-
             megaDumper = new MegaDumper();
             megaDumper.ProgressChanged += MegaDumper_ProgressChanged;
             megaDumper.DoWork += MegaDumper_DoWork;
             megaDumper.RunWorkerCompleted += MegaDumper_RunWorkerCompleted;
 
-            ports = new string[0];
+        }
+
+        private void refreshPortList()
+        {
+            string[] ports = SerialPort.GetPortNames();
+
+            serialPortToolStripMenuItem.DropDownItems.Clear();
+            serialPortToolStripMenuItem.DropDownItems.Add(autodetectToolStripMenuItem);
+            serialPortToolStripMenuItem.DropDownItems.Add(toolStripSerialSeperator);
+            foreach (string port in ports)
+            {
+                ToolStripMenuItem itm = new ToolStripMenuItem(port, null, portToolStripMenuItem_OnClick);
+                serialPortToolStripMenuItem.DropDownItems.Add(itm);
+            }
+        }
+
+        private void portToolStripMenuItem_OnClick(object sender, EventArgs e)
+        {
+            var selectedItem = (ToolStripMenuItem)sender;
+
+            foreach(ToolStripItem itm in serialPortToolStripMenuItem.DropDownItems)
+            {
+                if(itm == (ToolStripItem)selectedItem)
+                {
+                    serialPortToolStripMenuItem.Text = "Serial Port: <" + itm.Text + ">";
+                    serialPortToolStripMenuItem.Tag = itm.Text;
+                    selectedItem.Checked = true;
+                }
+                else
+                {
+                    if(itm.GetType() == typeof(ToolStripMenuItem))
+                    {
+                        ((ToolStripMenuItem)itm).Checked = false;
+                    }
+                }
+            }          
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            refreshPortList();
         }
 
         public enum LogType
@@ -107,24 +140,16 @@ namespace WinCartDumper
         }
 
 
-        
 
+
+        private void autodetectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AutoDetect();
+        }
         private void AutoDetect()
         {
-            lock (ports)
-            {
-                ports = SerialPort.GetPortNames();
-
-                foreach(string p in ports)
-                {
-                    
-                    megaDumper.Operation = MegaDumperOperation.Version;
-                    megaDumper.Port = p;
-                    megaDumper.RunWorkerAsync();
-
-                }
-
-            }
+            megaDumper.Operation = MegaDumperOperation.Autodetect;
+            megaDumper.RunWorkerAsync();
         }
 
 
@@ -137,8 +162,7 @@ namespace WinCartDumper
 
         private void btnGetInfo_Click(object sender, EventArgs e)
         {
-            log("This is an error", LogType.Error);
-            log("This is a success", LogType.Success);
+            log("Attempt to extract rom header from cart", LogType.Info);
 
             return;
             megaDumper.Port = "COM5";
@@ -165,10 +189,7 @@ namespace WinCartDumper
         {
             megaDumper.Port = "COM5";
 
-            megaDumper.ProgressChanged += MegaDumper_ProgressChanged;
-            megaDumper.DoWork += MegaDumper_DoWork;
-            megaDumper.RunWorkerCompleted += MegaDumper_RunWorkerCompleted;
-
+            megaDumper.Operation = MegaDumperOperation.Dump;
             megaDumper.RunWorkerAsync();
 
         }
@@ -182,15 +203,30 @@ namespace WinCartDumper
         private void MegaDumper_DoWork(object sender, DoWorkEventArgs e)
         {
             var fromDt = DateTime.Now;
-            byte[] res = megaDumper.GetDump((uint)0, (uint)500000);
+            byte[] res;
+
+            if(megaDumper.Operation == MegaDumperOperation.Dump)
+            {
+                res = megaDumper.GetDump((uint)0, (uint)500000);
+                var toDt = DateTime.Now;
+                var tm = toDt.Subtract(fromDt);
+                string s = "Ended dump in " + tm.TotalSeconds + "s\r\n";
+                s += "Data rate: " + ((float)500000 * 2.0f / 1024.0f) / tm.TotalSeconds + " kb/s";
+                e.Result = s;
+            }
+            else if(megaDumper.Operation == MegaDumperOperation.Version)
+            {
+                string ss = megaDumper.GetVersion();
+            }
+            else if(megaDumper.Operation == MegaDumperOperation.Autodetect)
+            {
+                string ss = megaDumper.AutoDetect();
+                e.Result = "Mega Dumper detected on " + ss;
+            }
+                
             //RomHeader h = megaDumper.getRomHeader();
 
-            var toDt = DateTime.Now;
-            var tm = toDt.Subtract(fromDt);
-            string s = "Ended dump in " + tm.TotalSeconds + "s\r\n";
-            s += "Data rate: " + ((float)500000 * 2.0f / 1024.0f) / tm.TotalSeconds + " kb/s";
-
-            e.Result = s;
+            
         }
 
         private void MegaDumper_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -208,6 +244,13 @@ namespace WinCartDumper
             frmAbout f = new frmAbout();
             f.ShowDialog();
         }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+
     }
 
 

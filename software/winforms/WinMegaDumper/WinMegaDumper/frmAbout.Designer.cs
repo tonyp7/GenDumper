@@ -63,11 +63,11 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(193, 115);
+            this.btnOK.Location = new System.Drawing.Point(193, 126);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(125, 45);
+            this.btnOK.Size = new System.Drawing.Size(125, 34);
             this.btnOK.TabIndex = 2;
-            this.btnOK.Text = "OK";
+            this.btnOK.Text = "&OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
