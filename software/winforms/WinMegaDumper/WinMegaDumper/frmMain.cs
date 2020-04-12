@@ -76,6 +76,13 @@ namespace WinCartDumper
         private void frmMain_Load(object sender, EventArgs e)
         {
             refreshPortList();
+
+            SerialPortService.PortsChanged += (sender1, changedArgs) => SerialPortService_PortsChanged(changedArgs.SerialPorts);
+        }
+
+        private void SerialPortService_PortsChanged(string[] serialPorts)
+        {
+            throw new NotImplementedException();
         }
 
         public enum LogType
