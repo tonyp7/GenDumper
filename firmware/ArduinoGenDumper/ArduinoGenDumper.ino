@@ -17,12 +17,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-@file MegaDumper.ino
+@file ArduinoGenDumper.ino
 @author Tony Pottier
-@brief Firmware for a Sega Mega Drive cart dumper
+@brief Firmware for a Sega Mega Drive / Genesis cart dumper
 
 @see https://idyl.io
-@see https://github.com/tonyp7/MegaDumper
+@see https://github.com/tonyp7/GenDumper
 
 
 THIS CODE IS INTENDED TO BE COMPILED WITH THE MIGHTYCORE ARDUINO CORE
@@ -76,7 +76,7 @@ word32_t address;
 uint8_t command;
 word16_t data;
 word32_t sz;
-const char* version = "MEGA DUMPER v1.0";
+const char* version = "GENDUMPER v1.0";
 
 
 /* The 16 bit databus is made of two 8 bit bus on the ATEMEGA: Port A and Port C. This sets the whole port as inputs */
@@ -136,6 +136,8 @@ void setup() {
   Serial.begin(460800);
 
 }
+
+
 
 void loop() {
 
