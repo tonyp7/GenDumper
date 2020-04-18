@@ -1,4 +1,4 @@
-# MegaDumper Software
+# GenDumper Software
 This contains PC clients to interface with the dumper.
 
 # winforms
