@@ -18,7 +18,13 @@ namespace WinCartDumper
         Autodetect = (byte)'a'
     }
 
-
+    public struct MegaDumperResult
+    {
+        public MegaDumperOperation operation;
+        public object result;
+        public DateTime dtStart;
+        public DateTime dtEnd;
+    }
 
     class MegaDumper : BackgroundWorker
     {
@@ -32,6 +38,8 @@ namespace WinCartDumper
         private System.Object transmissionAliveLock;
 
         private static RomHeader romHeader;
+
+        private const string FIRMWARE_STRING = "GENDUMPER";
 
 
         public MegaDumperOperation Operation
@@ -104,7 +112,7 @@ namespace WinCartDumper
             {
                 port = p;
                 string v = GetVersion();
-                if (v.StartsWith("MEGA DUMPER"))
+                if (v.StartsWith(MegaDumper.FIRMWARE_STRING))
                 {
                     //found mega dumper on port p
                     return p;
@@ -171,12 +179,17 @@ namespace WinCartDumper
 
         }
 
-        public byte[] GetDump(uint from, uint to)
+        public MegaDumperResult GetDump(uint from, uint to)
         {
+            MegaDumperResult res = new MegaDumperResult();
+            res.operation = operation;
+            res.dtStart = DateTime.Now;
+
+
             serialPort.PortName = port;
             bytesToReceive = 0;
             bytesStream.Clear();
-            operation = MegaDumperOperation.Dump;
+            //operation = MegaDumperOperation.Dump;
 
             /* build dump command */
             byte[] command = new byte[9];
@@ -201,7 +214,10 @@ namespace WinCartDumper
             }
             serialPort.Close();
 
-            return bytesStream.ToArray();
+
+            res.result = bytesStream.ToArray();
+            res.dtEnd = DateTime.Now;
+            return res;
 
         }
 

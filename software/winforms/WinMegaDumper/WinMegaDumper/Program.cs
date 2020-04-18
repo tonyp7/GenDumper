@@ -8,8 +8,8 @@ namespace WinCartDumper
 {
     static class Program
     {
-        public static readonly string VERSION = "Mega Dumper v1.0";
-        public static readonly string COPYRIGHT = "Copyright © 2020 Tony Pottier";
+        public const string VERSION = "GenDumper v1.0";
+        public const string COPYRIGHT = "Copyright © 2020 Tony Pottier";
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

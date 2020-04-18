@@ -26,6 +26,10 @@ namespace WinCartDumper
 
         MegaDumper megaDumper;
 
+        private const string LABEL_READY = "Ready.";
+        private const string LABEL_DUMP = "Reading cart...";
+        private const string LABEL_AUTODETECT = "Attempt to autodetect GENDUMPER...";
+
         public frmMain()
         {
             InitializeComponent();
@@ -37,10 +41,9 @@ namespace WinCartDumper
 
         }
 
-        private void refreshPortList()
-        {
-            string[] ports = SerialPort.GetPortNames();
 
+        private void refreshPortList(string[] ports)
+        {
             serialPortToolStripMenuItem.DropDownItems.Clear();
             serialPortToolStripMenuItem.DropDownItems.Add(autodetectToolStripMenuItem);
             serialPortToolStripMenuItem.DropDownItems.Add(toolStripSerialSeperator);
@@ -49,6 +52,12 @@ namespace WinCartDumper
                 ToolStripMenuItem itm = new ToolStripMenuItem(port, null, portToolStripMenuItem_OnClick);
                 serialPortToolStripMenuItem.DropDownItems.Add(itm);
             }
+        }
+        private void refreshPortList()
+        {
+            string[] ports = SerialPort.GetPortNames();
+            refreshPortList(ports);
+
         }
 
         private void portToolStripMenuItem_OnClick(object sender, EventArgs e)
@@ -59,9 +68,11 @@ namespace WinCartDumper
             {
                 if(itm == (ToolStripItem)selectedItem)
                 {
+                    log("Selected serial port " + itm.Text, LogType.Info);
                     serialPortToolStripMenuItem.Text = "Serial Port: <" + itm.Text + ">";
                     serialPortToolStripMenuItem.Tag = itm.Text;
                     selectedItem.Checked = true;
+                    megaDumper.Port = itm.Text;
                 }
                 else
                 {
@@ -76,13 +87,13 @@ namespace WinCartDumper
         private void frmMain_Load(object sender, EventArgs e)
         {
             refreshPortList();
-
+            toolStripStatusLabel.Text = LABEL_READY;
             SerialPortService.PortsChanged += (sender1, changedArgs) => SerialPortService_PortsChanged(changedArgs.SerialPorts);
         }
 
         private void SerialPortService_PortsChanged(string[] serialPorts)
         {
-            throw new NotImplementedException();
+            refreshPortList(serialPorts);
         }
 
         public enum LogType
@@ -98,6 +109,10 @@ namespace WinCartDumper
         private static Color colorDefault = Color.FromArgb(0, 0, 0);
         private static Color colorSuccess = Color.FromArgb(0, 192, 0);
         private static Color colorWarning = Color.FromArgb(192, 192, 0);
+        public void log(string message)
+        {
+            log(message, LogType.Info);
+        }
         public void log(string message, LogType logtype)
         {
             Color c;
@@ -194,32 +209,35 @@ namespace WinCartDumper
 
         private void btnDump_Click(object sender, EventArgs e)
         {
-            megaDumper.Port = "COM5";
-
-            megaDumper.Operation = MegaDumperOperation.Dump;
-            megaDumper.RunWorkerAsync();
-
+            if(megaDumper.Port == string.Empty)
+            {
+                MessageBox.Show("Please select a serial port or run autodect.", "No serial port selected.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                log("Rom dump started");
+                toolStripStatusLabel.Text = LABEL_DUMP;
+                megaDumper.Operation = MegaDumperOperation.Dump;
+                megaDumper.RunWorkerAsync();
+            }
+            
         }
 
         private void MegaDumper_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             toolStripProgressBar.Value = 100;
             rtfLog.Text += (string)e.Result;
+            toolStripStatusLabel.Text = LABEL_READY;
         }
 
         private void MegaDumper_DoWork(object sender, DoWorkEventArgs e)
         {
-            var fromDt = DateTime.Now;
-            byte[] res;
+            MegaDumperResult mdr = new MegaDumperResult();
 
             if(megaDumper.Operation == MegaDumperOperation.Dump)
             {
-                res = megaDumper.GetDump((uint)0, (uint)500000);
-                var toDt = DateTime.Now;
-                var tm = toDt.Subtract(fromDt);
-                string s = "Ended dump in " + tm.TotalSeconds + "s\r\n";
-                s += "Data rate: " + ((float)500000 * 2.0f / 1024.0f) / tm.TotalSeconds + " kb/s";
-                e.Result = s;
+                mdr = megaDumper.GetDump((uint)0, (uint)50000);
+                e.Result = mdr;
             }
             else if(megaDumper.Operation == MegaDumperOperation.Version)
             {

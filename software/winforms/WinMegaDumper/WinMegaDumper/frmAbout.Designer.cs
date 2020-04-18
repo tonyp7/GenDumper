@@ -44,10 +44,10 @@
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(62, 44);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(201, 13);
+            this.linkLabel1.Size = new System.Drawing.Size(194, 13);
             this.linkLabel1.TabIndex = 0;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "https://github.com/tonyp7/MegaDumper";
+            this.linkLabel1.Text = "https://github.com/tonyp7/GenDumper";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
             // linkLabel2
@@ -137,7 +137,7 @@
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "About Mega Dumper";
+            this.Text = "About GenDumper";
             this.Load += new System.EventHandler(this.frmAbout_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

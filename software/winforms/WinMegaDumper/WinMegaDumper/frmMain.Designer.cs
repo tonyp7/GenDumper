@@ -368,20 +368,20 @@
             this.autodetectToolStripMenuItem,
             this.toolStripSerialSeperator});
             this.serialPortToolStripMenuItem.Name = "serialPortToolStripMenuItem";
-            this.serialPortToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.serialPortToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.serialPortToolStripMenuItem.Text = "Serial Port: <>";
             // 
             // autodetectToolStripMenuItem
             // 
             this.autodetectToolStripMenuItem.Name = "autodetectToolStripMenuItem";
-            this.autodetectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.autodetectToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.autodetectToolStripMenuItem.Text = "Autodetect";
             this.autodetectToolStripMenuItem.Click += new System.EventHandler(this.autodetectToolStripMenuItem_Click);
             // 
             // toolStripSerialSeperator
             // 
             this.toolStripSerialSeperator.Name = "toolStripSerialSeperator";
-            this.toolStripSerialSeperator.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSerialSeperator.Size = new System.Drawing.Size(130, 6);
             // 
             // helpToolStripMenuItem
             // 
@@ -410,7 +410,7 @@
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
-            this.Text = "Mega Dumper";
+            this.Text = "GenDumper";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.groupBox2.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
