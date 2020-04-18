@@ -214,7 +214,8 @@ void loop() {
           SPI.transfer(address.bytes[0]);
           PORTB |= (uint8_t)B00010000; /* Set RCK high. */
 
-          /* wait ~100 ns for the ROM to show data */
+          /* wait ~150 ns for the ROM to show data. 2 NOPs is not reliable and sometimes generates wrong data */
+          NOP;
           NOP;
           NOP;
 
