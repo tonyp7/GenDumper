@@ -179,25 +179,80 @@ namespace WinCartDumper
 
         }
 
+        public MegaDumperResult GetDump()
+        {
+            return GetDump(0, 0);
+        }
         public MegaDumperResult GetDump(uint from, uint to)
         {
+            //set port to whatever was selected last by user
+            serialPort.PortName = port;
+
+            // Cart object
+            Cart cart = new Cart();
+
+            // result object
             MegaDumperResult res = new MegaDumperResult();
             res.operation = operation;
             res.dtStart = DateTime.Now;
 
+            // dump command
+            byte[] command = new byte[9];
+            byte[] fromBytes, toBytes;
+            command[0] = (byte)'d';
 
-            serialPort.PortName = port;
+            // reset data buffer
             bytesToReceive = 0;
             bytesStream.Clear();
-            //operation = MegaDumperOperation.Dump;
 
-            /* build dump command */
-            byte[] command = new byte[9];
-            byte[] fb = BitConverter.GetBytes(from);
-            byte[] tb = BitConverter.GetBytes(to);
-            command[0] = (byte)'d';
-            fb.CopyTo(command, 1); /* from address */
-            tb.CopyTo(command, 5); /* to address */
+            //if from and to == 0, we try to try to get the rom header first
+            if(from == 0 && to == 0)
+            {
+                fromBytes = BitConverter.GetBytes(RomHeader.PHYSICAL_ADDR_START); /* rom header starts at physical address 0x80 */
+                toBytes = BitConverter.GetBytes(RomHeader.PHYSICAL_ADDR_END); /* rom header ends at physical address 0x100 */
+                fromBytes.CopyTo(command, 1); /* from address */
+                toBytes.CopyTo(command, 5); /* to address */
+
+                serialPort.Open();
+                lock (transmissionOverLock)
+                {
+                    serialPort.Write(command, 0, command.Length);
+                    if (!Monitor.Wait(transmissionOverLock))
+                    {
+                        //timeout
+                    }
+                    else
+                    {
+                        //business as normal
+                    }
+                }
+                serialPort.Close();
+
+                cart.SetHeaderFromRawData(bytesStream.ToArray());
+
+                // report this progress
+                this.ReportProgress(0, cart);
+
+
+                // reset data buffer in order to receive the actual rom content
+                bytesToReceive = 0;
+                bytesStream.Clear();
+
+                //finally get the proper rom start and end
+                fromBytes = BitConverter.GetBytes(cart.Header.RomAddressStart);
+                toBytes = BitConverter.GetBytes(cart.Header.RomAddressEnd >> 1);
+            }
+            else
+            {
+                fromBytes = BitConverter.GetBytes(from);
+                toBytes = BitConverter.GetBytes(to);
+            }
+
+
+            
+            
+            fromBytes.CopyTo(command, 1); /* from address */
+            toBytes.CopyTo(command, 5); /* to address */
 
             serialPort.Open();
             lock (transmissionOverLock)
@@ -214,8 +269,11 @@ namespace WinCartDumper
             }
             serialPort.Close();
 
+            //save dump to cart
+            cart.RomData = bytesStream.ToArray();
 
-            res.result = bytesStream.ToArray();
+            //set the cart as result
+            res.result = cart;
             res.dtEnd = DateTime.Now;
             return res;
 
@@ -226,7 +284,7 @@ namespace WinCartDumper
             serialPort.PortName = port;
             bytesToReceive = 0;
             bytesStream.Clear();
-            operation = MegaDumperOperation.Header;
+            //operation = MegaDumperOperation.Header;
 
             serialPort.Open();
             
@@ -304,7 +362,6 @@ namespace WinCartDumper
             }
             if (bytesStream.Count >= bytesToReceive)
             {
-
 
                 lock (transmissionOverLock)
                 {

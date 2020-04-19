@@ -8,8 +8,25 @@ namespace WinCartDumper
 {
     class Cart
     {
-        RomHeader header;
-        byte[] raw;
+
+        private RomHeader header;
+        private byte[] raw;
+
+
+        public byte[] RomData { get { return raw; } set { raw = value; } }
+        public RomHeader Header { get { return header; } }
+
+        public Cart()
+        {
+            header = null;
+            raw = null;
+        }
+
+        public void SetHeaderFromRawData(byte[] data)
+        {
+            header = new RomHeader();
+            header.parse(data);
+        }
         
     }
 
@@ -67,6 +84,9 @@ namespace WinCartDumper
 
     class RomHeader
     {
+
+        public const uint PHYSICAL_ADDR_START = (uint)0x80;
+        public const uint PHYSICAL_ADDR_END = (uint)0x100;
         /*
             $100	16 bytes	System type
             $110	16 bytes	Copyright and release date

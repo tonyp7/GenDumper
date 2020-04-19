@@ -34,6 +34,8 @@ namespace WinCartDumper
         {
             InitializeComponent();
 
+            saveFileDialog.InitialDirectory = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
             megaDumper = new MegaDumper();
             megaDumper.ProgressChanged += MegaDumper_ProgressChanged;
             megaDumper.DoWork += MegaDumper_DoWork;
@@ -70,7 +72,7 @@ namespace WinCartDumper
                 {
                     log("Selected serial port " + itm.Text, LogType.Info);
                     serialPortToolStripMenuItem.Text = "Serial Port: <" + itm.Text + ">";
-                    serialPortToolStripMenuItem.Tag = itm.Text;
+                    serialPortToolStripMenuItem.Tag = itm.Text; //serialPortToolStripMenuItem is tagged with the serial port name alone
                     selectedItem.Checked = true;
                     megaDumper.Port = itm.Text;
                 }
@@ -88,12 +90,29 @@ namespace WinCartDumper
         {
             refreshPortList();
             toolStripStatusLabel.Text = LABEL_READY;
+
+            // Set up various tool tips
+            toolTip.SetToolTip(txtFilenameFormat, "This will automatically generate a filename based on:\n  %T - Game Title\n  %R - Region\n  %S - Serial Number\n  %C - Copyright Information");
+            toolTip.SetToolTip(lblFilenameFormat, "This will automatically generate a filename based on:\n  %T - Game Title\n  %R - Region\n  %S - Serial Number\n  %C - Copyright Information");
+
+
             SerialPortService.PortsChanged += (sender1, changedArgs) => SerialPortService_PortsChanged(changedArgs.SerialPorts);
+
+            log("Program Started");
         }
 
         private void SerialPortService_PortsChanged(string[] serialPorts)
         {
-            refreshPortList(serialPorts);
+            /* the hardware change listener works in a different thread so require invoke */
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(delegate { refreshPortList(serialPorts); }));
+            }
+            else
+            {
+                refreshPortList(serialPorts);
+            }
+            
         }
 
         public enum LogType
@@ -175,34 +194,15 @@ namespace WinCartDumper
         }
 
 
-        public static void Read()
+        private void refreshInfo(Cart c)
         {
-
-        }
-
-
-
-        private void btnGetInfo_Click(object sender, EventArgs e)
-        {
-            log("Attempt to extract rom header from cart", LogType.Info);
-
-            return;
-            megaDumper.Port = "COM5";
-
-            rtfLog.Text += "INFO: Cart header dump start\r\n";
-
-            RomHeader h = megaDumper.getRomHeader();
-
-            rtfLog.Text += "SUCCESS: Retrieved 256 bytes\r\n";
-
+            RomHeader h = c.Header;
             txtGameTitle.Text = h.DomesticGameTitle;
             txtCopyright.Text = h.Copyright;
-            txtRomSize.Text =   ((h.RomAddressEnd - h.RomAddressStart + 1) / 1024 ).ToString() + " kbytes";
+            txtRomSize.Text = ((h.RomAddressEnd - h.RomAddressStart + 1) / 1024).ToString() + " kbytes";
             txtRegion.Text = h.Region;
             txtSerialNumber.Text = h.SerialNumber;
             txtSave.Text = ((h.SaveChip.EndAddress - h.SaveChip.StartAddress + 1) / 1024).ToString() + " kbytes";
-
-            
         }
         
 
@@ -223,11 +223,40 @@ namespace WinCartDumper
             
         }
 
+
+        private string generateFileName(RomHeader h)
+        {
+            string filename = txtFilenameFormat.Text.Trim();
+
+            //perform replacements 
+            filename = filename.Replace("%T", h.DomesticGameTitle);
+            filename = filename.Replace("%R", h.Region);
+            filename = filename.Replace("%S", h.SerialNumber);
+            filename = filename.Replace("%C", h.Copyright);
+
+            //remove illegal filename characters before returning
+            return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
+
+        }
+
         private void MegaDumper_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             toolStripProgressBar.Value = 100;
-            rtfLog.Text += (string)e.Result;
+            //rtfLog.Text += (string)e.Result;
             toolStripStatusLabel.Text = LABEL_READY;
+
+            MegaDumperResult mdr = (MegaDumperResult)e.Result;
+
+            if (mdr.operation == MegaDumperOperation.Dump)
+            {
+                saveFileDialog.ShowDialog();
+
+                if (saveFileDialog.FileName != string.Empty)
+                {
+                    Cart c = (Cart)mdr.result;
+                    File.WriteAllBytes(saveFileDialog.FileName, c.RomData);
+                }
+            }
         }
 
         private void MegaDumper_DoWork(object sender, DoWorkEventArgs e)
@@ -236,7 +265,7 @@ namespace WinCartDumper
 
             if(megaDumper.Operation == MegaDumperOperation.Dump)
             {
-                mdr = megaDumper.GetDump((uint)0, (uint)50000);
+                mdr = megaDumper.GetDump();
                 e.Result = mdr;
             }
             else if(megaDumper.Operation == MegaDumperOperation.Version)
@@ -257,6 +286,14 @@ namespace WinCartDumper
         private void MegaDumper_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             toolStripProgressBar.Value = e.ProgressPercentage;
+
+            if(e.UserState != null)
+            {
+                Cart c = (Cart)e.UserState;
+                refreshInfo(c);
+                log("Detected cart: " + c.Header.DomesticGameTitle, LogType.Success);
+
+            }
         }
 
         private void saveLogToolStripMenuItem_Click(object sender, EventArgs e)

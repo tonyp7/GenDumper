@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.rtfLog = new System.Windows.Forms.RichTextBox();
@@ -35,7 +36,6 @@
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnGetInfo = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtSave = new System.Windows.Forms.TextBox();
@@ -49,11 +49,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.txtFilenameFormat = new System.Windows.Forms.TextBox();
             this.btnDump = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
+            this.lblFilenameFormat = new System.Windows.Forms.Label();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +63,8 @@
             this.toolStripSerialSeperator = new System.Windows.Forms.ToolStripSeparator();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -76,9 +76,9 @@
             // 
             this.groupBox2.Controls.Add(this.rtfLog);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(0, 302);
+            this.groupBox2.Location = new System.Drawing.Point(0, 278);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(534, 243);
+            this.groupBox2.Size = new System.Drawing.Size(543, 267);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Console";
@@ -91,7 +91,7 @@
             this.rtfLog.Name = "rtfLog";
             this.rtfLog.ReadOnly = true;
             this.rtfLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
-            this.rtfLog.Size = new System.Drawing.Size(528, 224);
+            this.rtfLog.Size = new System.Drawing.Size(537, 248);
             this.rtfLog.TabIndex = 0;
             this.rtfLog.Text = "";
             // 
@@ -102,7 +102,7 @@
             this.toolStripStatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 545);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(534, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(543, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip";
             // 
@@ -120,7 +120,6 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.btnGetInfo);
             this.groupBox3.Controls.Add(this.txtRegion);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.txtSave);
@@ -136,24 +135,14 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Location = new System.Drawing.Point(0, 24);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(534, 187);
+            this.groupBox3.Size = new System.Drawing.Size(543, 187);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Cart Info";
             // 
-            // btnGetInfo
-            // 
-            this.btnGetInfo.Location = new System.Drawing.Point(428, 133);
-            this.btnGetInfo.Name = "btnGetInfo";
-            this.btnGetInfo.Size = new System.Drawing.Size(92, 46);
-            this.btnGetInfo.TabIndex = 18;
-            this.btnGetInfo.Text = "Get Info";
-            this.btnGetInfo.UseVisualStyleBackColor = true;
-            this.btnGetInfo.Click += new System.EventHandler(this.btnGetInfo_Click);
-            // 
             // txtRegion
             // 
-            this.txtRegion.Location = new System.Drawing.Point(90, 81);
+            this.txtRegion.Location = new System.Drawing.Point(101, 81);
             this.txtRegion.Name = "txtRegion";
             this.txtRegion.ReadOnly = true;
             this.txtRegion.Size = new System.Drawing.Size(332, 20);
@@ -162,7 +151,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(43, 84);
+            this.label2.Location = new System.Drawing.Point(54, 84);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 13;
@@ -170,7 +159,7 @@
             // 
             // txtSave
             // 
-            this.txtSave.Location = new System.Drawing.Point(90, 159);
+            this.txtSave.Location = new System.Drawing.Point(101, 159);
             this.txtSave.Name = "txtSave";
             this.txtSave.ReadOnly = true;
             this.txtSave.Size = new System.Drawing.Size(332, 20);
@@ -179,7 +168,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(28, 162);
+            this.label5.Location = new System.Drawing.Point(39, 162);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 13);
             this.label5.TabIndex = 11;
@@ -187,7 +176,7 @@
             // 
             // txtRomSize
             // 
-            this.txtRomSize.Location = new System.Drawing.Point(90, 133);
+            this.txtRomSize.Location = new System.Drawing.Point(101, 133);
             this.txtRomSize.Name = "txtRomSize";
             this.txtRomSize.ReadOnly = true;
             this.txtRomSize.Size = new System.Drawing.Size(332, 20);
@@ -195,7 +184,7 @@
             // 
             // txtSerialNumber
             // 
-            this.txtSerialNumber.Location = new System.Drawing.Point(90, 107);
+            this.txtSerialNumber.Location = new System.Drawing.Point(101, 107);
             this.txtSerialNumber.Name = "txtSerialNumber";
             this.txtSerialNumber.ReadOnly = true;
             this.txtSerialNumber.Size = new System.Drawing.Size(332, 20);
@@ -203,7 +192,7 @@
             // 
             // txtCopyright
             // 
-            this.txtCopyright.Location = new System.Drawing.Point(90, 55);
+            this.txtCopyright.Location = new System.Drawing.Point(101, 55);
             this.txtCopyright.Name = "txtCopyright";
             this.txtCopyright.ReadOnly = true;
             this.txtCopyright.Size = new System.Drawing.Size(332, 20);
@@ -211,7 +200,7 @@
             // 
             // txtGameTitle
             // 
-            this.txtGameTitle.Location = new System.Drawing.Point(90, 29);
+            this.txtGameTitle.Location = new System.Drawing.Point(101, 29);
             this.txtGameTitle.Name = "txtGameTitle";
             this.txtGameTitle.ReadOnly = true;
             this.txtGameTitle.Size = new System.Drawing.Size(332, 20);
@@ -220,7 +209,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(32, 136);
+            this.label8.Location = new System.Drawing.Point(43, 136);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(52, 13);
             this.label8.TabIndex = 6;
@@ -229,7 +218,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(11, 110);
+            this.label6.Location = new System.Drawing.Point(22, 110);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(73, 13);
             this.label6.TabIndex = 4;
@@ -238,7 +227,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(33, 58);
+            this.label4.Location = new System.Drawing.Point(44, 58);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(51, 13);
             this.label4.TabIndex = 2;
@@ -247,7 +236,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 32);
+            this.label3.Location = new System.Drawing.Point(37, 32);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
             this.label3.TabIndex = 1;
@@ -255,62 +244,43 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.textBox8);
-            this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Controls.Add(this.textBox7);
+            this.groupBox4.Controls.Add(this.txtFilenameFormat);
             this.groupBox4.Controls.Add(this.btnDump);
-            this.groupBox4.Controls.Add(this.label7);
+            this.groupBox4.Controls.Add(this.lblFilenameFormat);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox4.Location = new System.Drawing.Point(0, 211);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(534, 91);
+            this.groupBox4.Size = new System.Drawing.Size(543, 67);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Dump";
             // 
-            // textBox8
+            // txtFilenameFormat
             // 
-            this.textBox8.Location = new System.Drawing.Point(90, 54);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(332, 20);
-            this.textBox8.TabIndex = 17;
-            this.textBox8.Text = "%T (%R).sav";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(7, 57);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(77, 13);
-            this.label10.TabIndex = 16;
-            this.label10.Text = "Save Filename";
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(90, 28);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(332, 20);
-            this.textBox7.TabIndex = 15;
-            this.textBox7.Text = "%T (%R).smd";
+            this.txtFilenameFormat.Location = new System.Drawing.Point(101, 24);
+            this.txtFilenameFormat.Name = "txtFilenameFormat";
+            this.txtFilenameFormat.Size = new System.Drawing.Size(332, 20);
+            this.txtFilenameFormat.TabIndex = 15;
+            this.txtFilenameFormat.Text = "%T (%R)";
             // 
             // btnDump
             // 
-            this.btnDump.Location = new System.Drawing.Point(428, 28);
+            this.btnDump.Location = new System.Drawing.Point(439, 19);
             this.btnDump.Name = "btnDump";
-            this.btnDump.Size = new System.Drawing.Size(92, 46);
+            this.btnDump.Size = new System.Drawing.Size(92, 29);
             this.btnDump.TabIndex = 5;
             this.btnDump.Text = "Dump!";
             this.btnDump.UseVisualStyleBackColor = true;
             this.btnDump.Click += new System.EventHandler(this.btnDump_Click);
             // 
-            // label7
+            // lblFilenameFormat
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(7, 31);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(77, 13);
-            this.label7.TabIndex = 3;
-            this.label7.Text = "ROM Filename";
+            this.lblFilenameFormat.AutoSize = true;
+            this.lblFilenameFormat.Location = new System.Drawing.Point(11, 27);
+            this.lblFilenameFormat.Name = "lblFilenameFormat";
+            this.lblFilenameFormat.Size = new System.Drawing.Size(84, 13);
+            this.lblFilenameFormat.TabIndex = 3;
+            this.lblFilenameFormat.Text = "Filename Format";
             // 
             // menuStrip
             // 
@@ -320,7 +290,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(534, 24);
+            this.menuStrip.Size = new System.Drawing.Size(543, 24);
             this.menuStrip.TabIndex = 5;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -398,11 +368,24 @@
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.Filter = "Mega Drive Roms|*.md|Save Files|*.sav|All files|*.*";
+            // 
+            // toolTip
+            // 
+            this.toolTip.AutomaticDelay = 100;
+            this.toolTip.AutoPopDelay = 5000;
+            this.toolTip.InitialDelay = 100;
+            this.toolTip.IsBalloon = true;
+            this.toolTip.ReshowDelay = 20;
+            this.toolTip.ShowAlways = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(534, 567);
+            this.ClientSize = new System.Drawing.Size(543, 567);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -447,11 +430,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btnDump;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox8;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.Button btnGetInfo;
+        private System.Windows.Forms.Label lblFilenameFormat;
+        private System.Windows.Forms.TextBox txtFilenameFormat;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -463,6 +443,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSerialSeperator;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
