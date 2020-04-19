@@ -18,12 +18,20 @@ namespace WinCartDumper
         Autodetect = (byte)'a'
     }
 
+    public enum ReturnCode : int
+    {
+        OK = 0,
+        ERROR = -1,
+        NOT_FOUND = 1
+    }
+
     public struct MegaDumperResult
     {
         public MegaDumperOperation operation;
         public object result;
         public DateTime dtStart;
         public DateTime dtEnd;
+        public ReturnCode returnCode;
     }
 
     class MegaDumper : BackgroundWorker
@@ -105,8 +113,14 @@ namespace WinCartDumper
         }
 
 
-        public string AutoDetect()
+        public MegaDumperResult AutoDetect()
         {
+            MegaDumperResult mdr = new MegaDumperResult();
+            mdr.dtStart = DateTime.Now;
+            mdr.returnCode = ReturnCode.NOT_FOUND;
+            mdr.operation = MegaDumperOperation.Autodetect;
+
+
             string[] ports = SerialPort.GetPortNames();
             foreach (string p in ports)
             {
@@ -114,11 +128,14 @@ namespace WinCartDumper
                 string v = GetVersion();
                 if (v.StartsWith(MegaDumper.FIRMWARE_STRING))
                 {
-                    //found mega dumper on port p
-                    return p;
+                    mdr.returnCode = ReturnCode.OK;
+                    mdr.result = p; //return named serial port in the result
+                    break;
                 }
             }
-            return string.Empty;
+
+            mdr.dtEnd = DateTime.Now;
+            return mdr;
         }
 
         public string GetVersion()

@@ -65,6 +65,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.saveFileDialogLog = new System.Windows.Forms.SaveFileDialog();
             this.groupBox2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -111,6 +112,7 @@
             this.toolStripProgressBar.Name = "toolStripProgressBar";
             this.toolStripProgressBar.Size = new System.Drawing.Size(200, 16);
             this.toolStripProgressBar.Step = 1;
+            this.toolStripProgressBar.Visible = false;
             // 
             // toolStripStatusLabel
             // 
@@ -364,13 +366,13 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // saveFileDialog
             // 
-            this.saveFileDialog.Filter = "Mega Drive Roms|*.md|Save Files|*.sav|All files|*.*";
+            this.saveFileDialog.Filter = "Mega Drive Roms|*.md|Save Files|*.sav|All Files|*.*";
             // 
             // toolTip
             // 
@@ -380,6 +382,10 @@
             this.toolTip.IsBalloon = true;
             this.toolTip.ReshowDelay = 20;
             this.toolTip.ShowAlways = true;
+            // 
+            // saveFileDialogLog
+            // 
+            this.saveFileDialogLog.Filter = "Text Documents|*.txt|All Files|*.*";
             // 
             // frmMain
             // 
@@ -445,6 +451,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSerialSeperator;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.SaveFileDialog saveFileDialogLog;
     }
 }
 

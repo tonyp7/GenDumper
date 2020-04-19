@@ -99,6 +99,9 @@ namespace WinCartDumper
             SerialPortService.PortsChanged += (sender1, changedArgs) => SerialPortService_PortsChanged(changedArgs.SerialPorts);
 
             log("Program Started");
+
+
+            AutoDetect();
         }
 
         private void SerialPortService_PortsChanged(string[] serialPorts)
@@ -217,6 +220,7 @@ namespace WinCartDumper
             {
                 log("Rom dump started");
                 toolStripStatusLabel.Text = LABEL_DUMP;
+                toolStripProgressBar.Visible = true;
                 megaDumper.Operation = MegaDumperOperation.Dump;
                 megaDumper.RunWorkerAsync();
             }
@@ -257,10 +261,27 @@ namespace WinCartDumper
                     File.WriteAllBytes(saveFileDialog.FileName, c.RomData);
                 }
             }
+            else if(mdr.operation == MegaDumperOperation.Autodetect)
+            {
+                if(mdr.returnCode == ReturnCode.OK)
+                {
+                    log("Found GenDumper on serial port " + (string)mdr.result, LogType.Success);
+                }
+                else
+                {
+                    log("GenDumper could not be found. Please plug your GenDumper in and select serial port or run auto-detection", LogType.Warning);
+                }
+                
+            }
+
+
+            toolStripProgressBar.Visible = false;
         }
 
         private void MegaDumper_DoWork(object sender, DoWorkEventArgs e)
         {
+
+
             MegaDumperResult mdr = new MegaDumperResult();
 
             if(megaDumper.Operation == MegaDumperOperation.Dump)
@@ -274,8 +295,8 @@ namespace WinCartDumper
             }
             else if(megaDumper.Operation == MegaDumperOperation.Autodetect)
             {
-                string ss = megaDumper.AutoDetect();
-                e.Result = "Mega Dumper detected on " + ss;
+                mdr = megaDumper.AutoDetect();
+                e.Result = mdr;
             }
                 
             //RomHeader h = megaDumper.getRomHeader();
@@ -292,13 +313,27 @@ namespace WinCartDumper
                 Cart c = (Cart)e.UserState;
                 refreshInfo(c);
                 log("Detected cart: " + c.Header.DomesticGameTitle, LogType.Success);
-
             }
         }
 
         private void saveLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            saveFileDialogLog.FileName = "gendumper_log_" + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".txt";
 
+            if(saveFileDialogLog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    File.WriteAllText(saveFileDialogLog.FileName, rtfLog.Text);
+                    log("log file saved under " + saveFileDialogLog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Log file could not be saved\nError: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
