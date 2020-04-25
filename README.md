@@ -1,5 +1,5 @@
 # GenDumper
-An open-source Sega Genesis / Mega Drive cart dumper. Includes the sources for the hardware, the firmware running on the hardware, and computer programs used to interface with the dumper.
+An open-source Sega Genesis / Mega Drive cart dumper. This repository includes the sources for the hardware, the firmware running on the hardware, and computer programs used to interface with the dumper.
 
 ![Revision 1](https://github.com/tonyp7/GenDumper/raw/master/pictures/mega-dumper-nhl.jpg)
 
